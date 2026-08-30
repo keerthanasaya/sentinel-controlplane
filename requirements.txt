@@ -1,0 +1,7 @@
+# Sentinel — real-time AI control plane (ControlPlane.ai prototype)
+fastapi>=0.111
+uvicorn[standard]>=0.30
+pyyaml>=6.0
+python-dotenv>=1.0
+httpx>=0.27
+pytest>=8.0        # dev only

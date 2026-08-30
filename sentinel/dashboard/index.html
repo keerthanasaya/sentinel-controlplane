@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sentinel — AI Control Plane</title>
+<link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    <h1>Sentinel</h1>
+    <span class="sub">real-time AI control plane</span>
+  </div>
+  <div class="modepill" id="modepill">…</div>
+</header>
+
+<section class="tiles" id="tiles"></section>
+
+<main>
+  <section class="panel stream">
+    <div class="panel-head">
+      <h2>Live decisions</h2>
+      <select id="ucFilter"><option value="">all use cases</option></select>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>use case</th><th>tier</th><th>action</th><th>flags</th><th>+lat</th><th>time</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+
+  <section class="panel queue">
+    <div class="panel-head"><h2>Human review queue</h2></div>
+    <div id="queue"></div>
+  </section>
+</main>
+
+<div class="drawer" id="drawer">
+  <div class="drawer-inner">
+    <button class="close" onclick="closeDrawer()">×</button>
+    <div id="drawerBody"></div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

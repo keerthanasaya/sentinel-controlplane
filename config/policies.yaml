@@ -1,0 +1,69 @@
+# Sentinel governance policy layer.
+# One block per enterprise AI use case. Behaviour (risk tier, latency budget,
+# thresholds, blocking rules) varies per use case, geography and risk appetite.
+# The audit trail records the exact policy version applied to every decision.
+
+version: "2026-08-29.1"
+
+defaults:
+  latency_budget_ms: 800
+  thresholds:
+    grounding_min: 0.50          # min share of factual claims that must be supported by sources
+    judge_factuality_min: 0.60   # min AI-as-judge factuality score
+    judge_groundedness_min: 0.55
+    cost_zscore: 3.5             # tokens/latency anomaly threshold vs learned baseline
+    max_tokens_per_response: 1500
+  actions:
+    on_timeout: annotate         # fail-safe when checks exceed the latency budget
+    allow_repair: true
+    block_on: [pii_leak, unsafe_high, agent_high_stakes_action]
+
+use_cases:
+
+  support-assistant:
+    label: "Customer Support Assistant"
+    surface: customer-facing
+    base_tier: low               # tight latency budget, mostly low-stakes chit-chat
+    latency_budget_ms: 400
+    geo: EU                      # GDPR — PII handling is strict
+    weekly_volume: 42000
+    knowledge_base: support_kb
+    high_stakes_keywords: [refund, chargeback, cancel, warranty, legal, gdpr, dispute, liable]
+    thresholds:
+      grounding_min: 0.55
+      max_tokens_per_response: 700
+    actions:
+      block_on: [pii_leak, unsafe_high]
+
+  internal-kb:
+    label: "Employee Knowledge Assistant"
+    surface: internal
+    base_tier: medium
+    latency_budget_ms: 900
+    geo: EU
+    weekly_volume: 15000
+    knowledge_base: hr_handbook
+    high_stakes_keywords: [termination, salary, disciplinary, harassment, medical leave, visa]
+    thresholds:
+      grounding_min: 0.50
+      cost_zscore: 3.0
+    actions:
+      block_on: [pii_leak, unsafe_high]
+
+  decision-support:
+    label: "Investment Decision-Support Tool"
+    surface: regulated
+    base_tier: high              # money — full check battery, escalation-biased
+    latency_budget_ms: 2500
+    geo: EU
+    weekly_volume: 6000
+    knowledge_base: finance_rules
+    high_stakes_keywords: [invest, transfer, wire, portfolio, guarantee, return, hedge, leverage, client funds]
+    thresholds:
+      grounding_min: 0.70
+      judge_factuality_min: 0.75
+      judge_groundedness_min: 0.70
+      cost_zscore: 3.0
+      max_tokens_per_response: 2000
+    actions:
+      block_on: [pii_leak, unsafe_high, unsafe_medium, agent_high_stakes_action]
